@@ -4,75 +4,51 @@
     </head>
     <body>
         <?php
-            $name = 'Jim';
-            $what = 'geek';
-            $level = 10;
-            echo 'Hi, my name is '.$name,', and I am a level '.$level.'
-            '.$what;
-            echo '<br/>';
-            $hoursworked = $_GET['hours'];
-            $rate = 12;
-            $total = $hoursworked * $rate;
-            if ($hoursworked > 40) {
-                $total = $hoursworked * $rate * 1.5;
-            } else {
-                $total = $hoursworked * $rate;
-            }
-            echo ($total > 0) ? 'You owe me '.$total : "You're welcome";
-            
-            
-            echo '<br/>';
-            
             class Game{
+                var $position;
+                
                 function __construct($squares) {
+                    if($squares == '') {
+                        $squares = '---------';
+                    }
                     $this->position = str_split($squares);
                 }
                 
                 function winner($token) {
-                    $won = false;
-                    if (($this->position[0] == $token) &&
-                    ($this->position[1] == $token) &&
-                    ($this->position[2] == $token)) {
-                        $won = true;
-                    } else if (($this->position[3] == $token) &&
-                    ($this->position[4] == $token) &&
-                    ($this->position[5] == $token)) {
-                        $won = true;
-                    } else if (($this->position[6] == $token) &&
-                    ($this->position[7] == $token) &&
-                    ($this->position[8] == $token)) {
-                        $won = true;
-                    } else if (($this->position[0] == $token) &&
-                    ($this->position[3] == $token) &&
-                    ($this->position[6] == $token)) {
-                        $won = true;
-                    } else if (($this->position[1] == $token) &&
-                    ($this->position[4] == $token) &&
-                    ($this->position[7] == $token)) {
-                        $won = true;
-                    } else if (($this->position[2] == $token) &&
-                    ($this->position[5] == $token) &&
-                    ($this->position[8] == $token)) {
-                        $won = true;
-                    } else if (($this->position[0] == $token) &&
-                    ($this->position[4] == $token) &&
-                    ($this->position[8] == $token)) {
-                        $won = true;
-                    } else if (($this->position[2] == $token) &&
-                    ($this->position[4] == $token) &&
-                    ($this->position[6] == $token)) {
-                        $won = true;
+                    //rows
+                    for($row=0; $row<3; $row++) {
+                        if (($this->position[3*$row] == $token) 
+                        && ($this->position[3*$row+1] == $token)
+                        && ($this->position[3*$row+2] == $token)) {
+                            return true;
+                        }
                     }
-                    return $won;
+                    //columns
+                    for($col=0; $col<3; $col++) {
+                        if (($this->position[$col] == $token)
+                        && ($this->position[$col+3] == $token)
+                        && ($this->position[$col+6] == $token)) {
+                            return true;
+                        }
+                    }
+                    //diagonals
+                    if (($this->position[0] == $token)
+                    && ($this->position[4] == $token)
+                    && ($this->position[8] == $token)) {
+                        return true;
+                    } else if (($this->position[2] == $token)
+                    && ($this->position[4] == $token)
+                    && ($this->position[6] == $token)) {
+                        return true;
+                    }
+                    return false;
                 }
                 
                 function display() {
-                    echo '<table cols=”3” style=”fontsize:
-                    large; fontweight:
-                    bold”>';
+                    echo '<table cols=”3” style=”font-size: large; font-weight: bold”>';
                     echo '<tr>'; // open the first row
-                    for ($pos=0; $pos<9;$pos++) {
-                        echo '<td>-</td>';
+                    for ($pos=0; $pos<9; $pos++) {
+                        echo $this->show_cell($pos);
                         if ($pos %3 == 2) {
                             echo '</tr><tr>'; // start a new row for the next square
                         }
@@ -80,9 +56,34 @@
                     echo '</tr>'; // close the last row
                     echo '</table>';
                 }
+                
+                function show_cell($which) {
+                    $token = $this->position[$which];
+                    // deal with the easy case
+                    if ($token <> '-') {
+                        return '<td>'.$token.'</td>';
+                    }
+                    // now the hard case
+                    $this->newposition = $this->position; // copy the original
+                    $this->newposition[$which] = 'x'; // this would be their move
+                    $move = implode($this->newposition); // make a string from the board array
+                    $link = './?board='.$move; // this is what we want the link to be
+                    // so return a cell containing an anchor and showing a hyphen
+                    return '<td><a href="'.$link.'">-</a></td>';
+                }
+                
+                function pick_move() {
+                    for($pos=0; $pos < 9; $pos++) {
+                        if($this->position[$pos] == '-') {
+                            $this->position[$pos] = 'o';
+                            break;
+                        }
+                    }
+                }
             }
             
-            $game = new Game($squares);
+            $game = new Game($_GET['board']);
+            $game->pick_move();
             $game->display();
             if ($game->winner('x')) {
                 echo 'You win. Lucky guesses!';
@@ -93,6 +94,8 @@
             }
             
         ?>
-        
+        <br/>
+        <a href="./?board=---------">Reset</a>
+        test3
     </body>
 </html>
