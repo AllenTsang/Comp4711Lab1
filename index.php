@@ -4,9 +4,21 @@
     </head>
     <body>
         <?php
+            /**
+             * CLASS: Game
+             * 
+             * Contains the logic required to create the game.
+             */
             class Game{
                 var $position;
                 
+                /**
+                 * FUNCTION: __construct
+                 * 
+                 * Constructor for the Game class.
+                 * 
+                 * @param string $squares   Represents the current board.
+                 */
                 function __construct($squares) {
                     if($squares == '') {
                         $squares = '---------';
@@ -14,8 +26,16 @@
                     $this->position = str_split($squares);
                 }
                 
+                /**
+                 * FUNCTION: winner
+                 * 
+                 * Determines whether a given player has won the game.
+                 * 
+                 * @param type $token   Represents a player's pieces.
+                 * @return boolean      Whether the player specified won.
+                 */
                 function winner($token) {
-                    //rows
+                    //row check
                     for($row=0; $row<3; $row++) {
                         if (($this->position[3*$row] == $token) 
                         && ($this->position[3*$row+1] == $token)
@@ -23,7 +43,7 @@
                             return true;
                         }
                     }
-                    //columns
+                    //column check
                     for($col=0; $col<3; $col++) {
                         if (($this->position[$col] == $token)
                         && ($this->position[$col+3] == $token)
@@ -31,19 +51,20 @@
                             return true;
                         }
                     }
-                    //diagonals
-                    if (($this->position[0] == $token)
-                    && ($this->position[4] == $token)
-                    && ($this->position[8] == $token)) {
-                        return true;
-                    } else if (($this->position[2] == $token)
-                    && ($this->position[4] == $token)
-                    && ($this->position[6] == $token)) {
+                    //diagonal checks
+                    if ((($this->position[0] == $token) && ($this->position[4] == $token)
+                    && ($this->position[8] == $token)) || (($this->position[2] == $token)
+                    && ($this->position[4] == $token) && ($this->position[6] == $token))) {
                         return true;
                     }
                     return false;
                 }
                 
+                /**
+                 * FUNCTION: display
+                 * 
+                 * Draws the current board.
+                 */
                 function display() {
                     echo '<table cols=”3” style=”font-size: large; font-weight: bold”>';
                     echo '<tr>'; // open the first row
@@ -57,6 +78,14 @@
                     echo '</table>';
                 }
                 
+                /**
+                 * FUNCTION: show_cell
+                 * 
+                 * Generates the HTML string to draw the cell requested.
+                 * 
+                 * @param type $which   The index of the cell to be drawn.
+                 * @return type         Contents of the cell.
+                 */
                 function show_cell($which) {
                     $token = $this->position[$which];
                     // deal with the easy case
@@ -72,6 +101,11 @@
                     return '<td><a href="'.$link.'">-</a></td>';
                 }
                 
+                /**
+                 * FUNCTION: pick_move
+                 * 
+                 * Selects a move for the AI (by choosing the first open slot).
+                 */
                 function pick_move() {
                     for($pos=0; $pos < 9; $pos++) {
                         if($this->position[$pos] == '-') {
@@ -82,9 +116,13 @@
                 }
             }
             
+            //create the game
             $game = new Game($_GET['board']);
+            //pick a move for the AI
             $game->pick_move();
+            //display the board
             $game->display();
+            //check if anybody won
             if ($game->winner('x')) {
                 echo 'You win. Lucky guesses!';
             } else if ($game->winner('o')) {
@@ -92,10 +130,9 @@
             } else {
                 echo 'No winner yet, but you are losing.';
             }
-            
+            //link to restart game
+            echo '<br/><a href="./?board=---------">Restart game</a>';
         ?>
-        <br/>
-        <a href="./?board=---------">Reset</a>
-        test3
+        
     </body>
 </html>
