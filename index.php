@@ -100,7 +100,7 @@
                     $this->newposition = $this->position; // copy the original
                     $this->newposition[$which] = 'x'; // this would be their move
                     $move = implode($this->newposition); // make a string from the board array
-                    $link = './?board='.$move; // this is what we want the link to be
+                    $link = './index.php?board='.$move; // this is what we want the link to be
                     // so return a cell containing an anchor and showing a hyphen
                     if($this->gameover == true) {
                         return '<td>-</td>';
@@ -141,7 +141,7 @@
             //display the board
             $game->display();
             //link to restart game
-            echo '<br/><a href="./?board=---------">Restart game</a>';
+            echo '<br/><a href="./index.php?board=---------">Restart game</a>';
         ?>
         
     </body>
