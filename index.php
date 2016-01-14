@@ -125,15 +125,18 @@
             
             //create the game
             $game = new Game($_GET['board']);
-            //check if anybody won
+            //check if player won
             if ($game->winner('x')) {
                 echo 'You win. Lucky guesses!';
-            } else if ($game->winner('o')) {
-                echo 'I win. Muahahahaha';
             } else {
                 //pick a move for the AI
                 $game->pick_move();
-                echo 'No winner yet, but you are losing.';
+                //check if AI won
+                if ($game->winner('o')) {
+                    echo 'I win. Muahahahaha';
+                } else {
+                    echo 'No winner yet, but you are losing.';
+                }
             }
             //display the board
             $game->display();
