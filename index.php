@@ -10,7 +10,7 @@
              * Contains the logic required to create the game.
              */
             class Game{
-                var $position;
+                var $position, $gameover;
                 
                 /**
                  * FUNCTION: __construct
@@ -24,6 +24,7 @@
                         $squares = '---------';
                     }
                     $this->position = str_split($squares);
+                    $this->gameover = false;
                 }
                 
                 /**
@@ -40,6 +41,7 @@
                         if (($this->position[3*$row] == $token) 
                         && ($this->position[3*$row+1] == $token)
                         && ($this->position[3*$row+2] == $token)) {
+                            $this->gameover = true;
                             return true;
                         }
                     }
@@ -48,6 +50,7 @@
                         if (($this->position[$col] == $token)
                         && ($this->position[$col+3] == $token)
                         && ($this->position[$col+6] == $token)) {
+                            $this->gameover = true;
                             return true;
                         }
                     }
@@ -55,6 +58,7 @@
                     if ((($this->position[0] == $token) && ($this->position[4] == $token)
                     && ($this->position[8] == $token)) || (($this->position[2] == $token)
                     && ($this->position[4] == $token) && ($this->position[6] == $token))) {
+                        $this->gameover = true;
                         return true;
                     }
                     return false;
@@ -98,6 +102,9 @@
                     $move = implode($this->newposition); // make a string from the board array
                     $link = './?board='.$move; // this is what we want the link to be
                     // so return a cell containing an anchor and showing a hyphen
+                    if($this->gameover == true) {
+                        return '<td>-</td>';
+                    }
                     return '<td><a href="'.$link.'">-</a></td>';
                 }
                 
@@ -118,18 +125,18 @@
             
             //create the game
             $game = new Game($_GET['board']);
-            //pick a move for the AI
-            $game->pick_move();
-            //display the board
-            $game->display();
             //check if anybody won
             if ($game->winner('x')) {
                 echo 'You win. Lucky guesses!';
             } else if ($game->winner('o')) {
                 echo 'I win. Muahahahaha';
             } else {
+                //pick a move for the AI
+                $game->pick_move();
                 echo 'No winner yet, but you are losing.';
             }
+            //display the board
+            $game->display();
             //link to restart game
             echo '<br/><a href="./?board=---------">Restart game</a>';
         ?>
